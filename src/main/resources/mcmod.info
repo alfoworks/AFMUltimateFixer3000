@@ -1,0 +1,16 @@
+[
+{
+  "modid": "afmuf",
+  "name": "AFMUltimateFixer",
+  "description": "ASM Fixes.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Iterator"],
+  "credits": "Iterator, gameforEA",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
