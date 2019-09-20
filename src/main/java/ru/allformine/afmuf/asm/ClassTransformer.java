@@ -3,6 +3,7 @@ package ru.allformine.afmuf.asm;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.tree.ClassNode;
 import ru.allformine.afmuf.asm.handler.IClassHandler;
+import ru.allformine.afmuf.asm.handler.TestHandler;
 
 import java.util.ArrayList;
 
@@ -12,7 +13,7 @@ public final class ClassTransformer implements IClassTransformer {
     private final ArrayList<IClassHandler> handlers = new ArrayList<>();
 
     public ClassTransformer() {
-        //handlers.add(new TransportationSPHHandler());
+        handlers.add(new TestHandler());
     }
 
     @Override

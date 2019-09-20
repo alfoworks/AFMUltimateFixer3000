@@ -15,6 +15,12 @@ version = "0.1"
 group = "ru.allformine.afmuf" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "afmuf"
 
+jar {
+    manifest {
+        attributes("FMLCorePluginContainsFMLMod": "true", "FMLCorePlugin": "ru.allformine.afmuf.asm.LoadingPlugin")
+    }
+}
+
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
