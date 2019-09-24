@@ -44,6 +44,8 @@ public final class ASMHelper {
             }
         }
 
+        System.out.println("Fuck.");
+
         throw new NoSuchMethodError(node.name + "." + name + desc);
     }
 

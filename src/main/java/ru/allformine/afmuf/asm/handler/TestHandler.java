@@ -1,13 +1,11 @@
 package ru.allformine.afmuf.asm.handler;
 
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import ru.allformine.afmuf.asm.ASMHelper;
 
 public class TestHandler implements IClassHandler {
-    private static final String METHOD_DESC = "(Lcom/mrcrayfish/furniture/network/message/MessageDoorMat;Lnet/minecraftforge/fml/common/network/simpleimpl/MessageContext;)V";
+    private static final String METHOD_DESC = "(Lcom/mrcrayfish/furniture/network/message/MessageDoorMat;Lnet/minecraftforge/fml/common/network/simpleimpl/MessageContext;)Lnet/minecraftforge/fml/common/network/simpleimpl/IMessage;";
 
     public static void testPrint() {
         System.out.println("ASM Test!");
@@ -15,21 +13,26 @@ public class TestHandler implements IClassHandler {
 
     @Override
     public boolean accept(String name) {
-        return false;
+        return name.equals("com.mrcrayfish.furniture.network.message.MessageDoorMat");
     }
 
     @Override
-    public boolean transform(ClassNode node) {
-        MethodNode method = ASMHelper.findMethod(node, "onMessage", METHOD_DESC);
-        method.instructions.insertBefore(method.instructions.get(0),
+    public byte[] transform(byte[] basicClass) {
+        ClassNode cNode = new ClassNode();
+        new ClassReader(basicClass).accept(cNode, 0);
+
+        /*
+        method.instructions.insertBefore(method.instructions.get(6),
                 new MethodInsnNode(Opcodes.INVOKESTATIC,
                         "ru/allformine/afmuf/asm/handler/TestHandler",
                         "testPrint",
                         "",
                         false));
+        */
 
-        System.out.println("Test patch applied?");
+        ClassWriter cWriter = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        cNode.accept(cWriter);
 
-        return true;
+        return cWriter.toByteArray();
     }
 }

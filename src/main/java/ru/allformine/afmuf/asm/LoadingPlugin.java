@@ -5,8 +5,6 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion(value = "1.12.2")
-@IFMLLoadingPlugin.TransformerExclusions("ru.allformine.afmuf.asm.")
-@IFMLLoadingPlugin.SortingIndex(1001) // SRG
 public final class LoadingPlugin implements IFMLLoadingPlugin {
 
     @Override

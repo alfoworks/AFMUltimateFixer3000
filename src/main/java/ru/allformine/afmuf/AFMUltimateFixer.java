@@ -3,20 +3,14 @@ package ru.allformine.afmuf;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = "afmuf")
+@Mod(modid = "afmuf", certificateFingerprint = "9f0ef428570ea3dc9744a329e6e589d21413fe18")
 public class AFMUltimateFixer {
-    private static Logger logger;
+    public static Logger logger;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         logger = event.getModLog();
-    }
-
-    @EventHandler
-    public void serverStart(FMLServerStartedEvent event) {
-
     }
 }
