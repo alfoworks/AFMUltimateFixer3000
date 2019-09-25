@@ -17,7 +17,7 @@ archivesBaseName = "afmuf"
 
 jar {
     manifest {
-        attributes("FMLCorePluginContainsFMLMod": "true", "FMLCorePlugin": "ru.allformine.afmuf.asm.LoadingPlugin")
+        attributes("FMLCorePluginContainsFMLMod": "true", "FMLCorePlugin": "ru.allformine.afmuf.hooks.AFMHookLoader")
     }
 }
 

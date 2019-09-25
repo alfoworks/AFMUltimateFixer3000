@@ -12,6 +12,6 @@ public class AFMHookLoader extends HookLoader {
     @Override
     public void registerHooks() {
         //регистрируем класс, где есть методы с аннотацией @Hook
-        registerHookContainer(AFMHookContainer.class.getName());
+        registerHookContainer("ru.allformine.afmuf.hooks.AFMHookContainer");
     }
 }
