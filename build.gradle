@@ -38,6 +38,13 @@ compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }
 
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+
 minecraft {
     version = "1.12.2-14.23.5.2815"
     runDir = "run"
@@ -72,6 +79,8 @@ dependencies {
     // for more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    compile name: "furniture"
 
 }
 
