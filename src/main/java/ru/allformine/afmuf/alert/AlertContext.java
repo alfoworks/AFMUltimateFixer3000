@@ -1,6 +1,5 @@
 package ru.allformine.afmuf.alert;
 
-import com.sun.istack.internal.NotNull;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.StringJoiner;
@@ -16,7 +15,7 @@ public class AlertContext {
 
     public AlertMod mod;
 
-    public AlertContext(String playerName, String packetName, BlockPos blockPos, BlockPos playerPos, String tileName, @NotNull AlertMod alertMod) {
+    public AlertContext(String playerName, String packetName, BlockPos blockPos, BlockPos playerPos, String tileName, AlertMod alertMod) {
         this.playerName = playerName;
         this.packetName = packetName;
 
