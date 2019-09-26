@@ -5,8 +5,6 @@ import com.google.gson.JsonObject;
 import ru.allformine.afmuf.alert.AlertContext;
 import ru.allformine.afmuf.net.Requests;
 
-import java.util.ArrayList;
-
 public class Webhook {
     private static void sendApiRequest(JsonObject object, String[] extra) {
         object.addProperty("server_id", "lf"); //TODO asap сделать конфиг для айди
@@ -28,10 +26,6 @@ public class Webhook {
     public static void sendSecureAlert(AlertContext context) { //TODO дописать это. Сделаю это сам (не выполнять)
         JsonObject object = new JsonObject();
 
-        ArrayList<String> extra = new ArrayList<>();
-
-        extra.add(context.playerName != null ? context.playerName : "Unknown player");
-
-        sendApiRequest(object, extra.toArray(new String[0]));
+        sendApiRequest(object, new String[]{context.playerName, context.mod.getModName(), context.packetName, context.getExtraInfo()});
     }
 }
