@@ -25,9 +25,8 @@ public class AFMHookContainer {
             if (doorMat.getMessage() != null) {
                 Webhook.sendSecureAlert(new AlertContext(ctx.getServerHandler().player.getName(),
                         "MessageDoorMat",
-                        tileEntity.getPos(),
                         null,
-                        tileEntity.toString(),
+                        tileEntity,
                         AlertMod.FURNITURE));
 
                 return true;
