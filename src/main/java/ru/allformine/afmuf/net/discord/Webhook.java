@@ -8,12 +8,12 @@ import ru.allformine.afmuf.net.Requests;
 
 public class Webhook {
     private static void sendApiRequest(JsonObject object, String[] extra) {
-        object.addProperty("server_id", "lf");
+        object.addProperty("server_id", References.server_id.getString());
         object.addProperty("type", "PACKETHACK_USAGE_DETECTED");
         object.addProperty("group", "secalert");
         object.add("arguments", arrayToJson(extra));
         final String json = object.toString();
-        Requests.sendPostJSON(json, "https://" + References.webhook_api_domain + "/webhook_api/");
+        Requests.sendPostJSON(json, "https://" + References.webhook_api_domain.getString() + "/webhook_api/");
     }
 
     private static JsonArray arrayToJson(String[] array) {
