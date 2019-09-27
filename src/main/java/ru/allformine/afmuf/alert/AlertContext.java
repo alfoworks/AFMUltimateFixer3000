@@ -15,7 +15,9 @@ public class AlertContext {
 
     public AlertMod mod;
 
-    public AlertContext(String playerName, String packetName, BlockPos playerPos, TileEntity tile, AlertMod alertMod) {
+    public String desc;
+
+    public AlertContext(String playerName, String packetName, BlockPos playerPos, TileEntity tile, AlertMod alertMod, String desc) {
         this.playerName = playerName;
         this.packetName = packetName;
 
@@ -24,6 +26,8 @@ public class AlertContext {
         this.playerPos = playerPos;
 
         this.mod = alertMod;
+
+        this.desc = desc;
     }
 
     public String getExtraInfo() {
@@ -35,6 +39,10 @@ public class AlertContext {
 
         if (tile != null) {
             info.add(String.format("Tile info: %s", tile.toString()));
+        }
+
+        if (desc != null) {
+            info.add(String.format("Description: %s", desc));
         }
 
         return info.toString();

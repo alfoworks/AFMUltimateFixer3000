@@ -4,11 +4,15 @@ import com.mrcrayfish.furniture.network.message.MessageDoorMat;
 import com.mrcrayfish.furniture.tileentity.TileEntityDoorMat;
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.ReturnCondition;
-import ibxm.Player;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import ru.allformine.afmuf.alert.AlertContext;
 import ru.allformine.afmuf.alert.AlertMod;
@@ -25,18 +29,18 @@ public class AFMHookContainer {
         if (tileEntity instanceof TileEntityDoorMat) {
             TileEntityDoorMat doorMat = (TileEntityDoorMat) tileEntity;
 
-            if (doorMat.getMessage() != null) {
+            boolean cancelled = MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickBlock(ctx.getServerHandler().player, EnumHand.MAIN_HAND, tileEntity.getPos(), EnumFacing.UP, Vec3d.ZERO));
+
+            if (doorMat.getMessage() != null || cancelled) {
                 Webhook.sendSecureAlert(new AlertContext(ctx.getServerHandler().player.getName(),
                         "MessageDoorMat",
                         null,
                         tileEntity,
-                        AlertMod.FURNITURE));
+                        AlertMod.FURNITURE,
+                        cancelled ? "Event cancelled" : "Attempt to change written doormat."));
 
                 return true;
             }
-
-            // player.gui
-            //TODO сделать проверку на текущий GuiScreen, проверка выше не работает для поставвленных ковриков
         }
 
         return false;
