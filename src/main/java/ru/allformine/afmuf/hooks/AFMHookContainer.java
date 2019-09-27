@@ -4,6 +4,8 @@ import com.mrcrayfish.furniture.network.message.MessageDoorMat;
 import com.mrcrayfish.furniture.tileentity.TileEntityDoorMat;
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.ReturnCondition;
+import ibxm.Player;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -15,7 +17,8 @@ import ru.allformine.afmuf.net.discord.Webhook;
 public class AFMHookContainer {
     @Hook(returnCondition = ReturnCondition.ON_TRUE, returnNull = true)
     public static boolean onMessage(MessageDoorMat anus, MessageDoorMat message, MessageContext ctx) {
-        World world = ctx.getServerHandler().player.world;
+        EntityPlayerMP player = ctx.getServerHandler().player;
+        World world = player.world;
         BlockPos pos = new BlockPos(message.x, message.y, message.z);
         TileEntity tileEntity = world.getTileEntity(pos);
 
@@ -32,6 +35,7 @@ public class AFMHookContainer {
                 return true;
             }
 
+            // player.gui
             //TODO сделать проверку на текущий GuiScreen, проверка выше не работает для поставвленных ковриков
         }
 
