@@ -51,6 +51,13 @@ public class AFMHookContainer {
 
     @Hook(returnCondition = ReturnCondition.ALWAYS, intReturnConstant = 0)
     public static boolean getCurrentPlayerCount(MinecraftServer anus) {
-        return true;
+        String className = new Exception().getStackTrace()[1].getClassName();
+
+        if (className.equals("io.netty.channel.epoll.EpollSocketChannel")) {
+            System.out.println("LegacyPing, returned 0");
+            return true; //TODO интеграция с плагином на ваниш.
+        }
+
+        return false;
     }
 }
