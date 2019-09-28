@@ -5,6 +5,7 @@ import com.mrcrayfish.furniture.tileentity.TileEntityDoorMat;
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.ReturnCondition;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
@@ -29,20 +30,27 @@ public class AFMHookContainer {
         if (tileEntity instanceof TileEntityDoorMat) {
             TileEntityDoorMat doorMat = (TileEntityDoorMat) tileEntity;
 
-            boolean cancelled = MinecraftForge.EVENT_BUS.post(new PlayerInteractEvent.RightClickBlock(ctx.getServerHandler().player, EnumHand.MAIN_HAND, tileEntity.getPos(), EnumFacing.UP, Vec3d.ZERO));
+            PlayerInteractEvent event = new PlayerInteractEvent.RightClickBlock(ctx.getServerHandler().player, EnumHand.MAIN_HAND, tileEntity.getPos(), EnumFacing.UP, Vec3d.ZERO);
+            MinecraftForge.EVENT_BUS.post(event);
 
-            if (doorMat.getMessage() != null || cancelled) {
+            System.out.println(event.isCanceled());
+            if (doorMat.getMessage() != null || event.isCanceled()) {
                 Webhook.sendSecureAlert(new AlertContext(ctx.getServerHandler().player.getName(),
                         "MessageDoorMat",
                         null,
                         tileEntity,
                         AlertMod.FURNITURE,
-                        cancelled ? "Event cancelled" : "Attempt to change written doormat."));
+                        event.isCanceled() ? "Event cancelled" : "Attempt to change written doormat."));
 
                 return true;
             }
         }
 
         return false;
+    }
+
+    @Hook(returnCondition = ReturnCondition.ALWAYS, intReturnConstant = 0)
+    public static boolean getCurrentPlayerCount(MinecraftServer anus) {
+        return true;
     }
 }
