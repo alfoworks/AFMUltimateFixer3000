@@ -81,6 +81,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     compile name: "furniture"
+    compile name: "afmcp"
 
 }
 

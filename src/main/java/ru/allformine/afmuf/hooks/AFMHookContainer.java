@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import ru.allformine.afmcp.vanish.VanishManager;
 import ru.allformine.afmuf.alert.AlertContext;
 import ru.allformine.afmuf.alert.AlertMod;
 import ru.allformine.afmuf.net.discord.Webhook;
@@ -49,10 +50,12 @@ public class AFMHookContainer {
         return false;
     }
 
-    @Hook(returnCondition = ReturnCondition.ALWAYS, intReturnConstant = 0)
+    @Hook(returnCondition = ReturnCondition.ALWAYS, returnAnotherMethod = "getPlayerCount")
     public static boolean getCurrentPlayerCount(MinecraftServer anus) {
-        String className = new Exception().getStackTrace()[1].getClassName();
+        return true;
+    }
 
-        return true; //TODO интеграция с плагином на ваниш.
+    public static int getPlayerCount(MinecraftServer anus) {
+        return VanishManager.getPlayerCountExcludingVanished();
     }
 }
