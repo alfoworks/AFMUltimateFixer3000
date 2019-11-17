@@ -84,6 +84,7 @@ dependencies {
     compile name: "afmcp"
     compile name: "opensecurity"
     compile name: "opencomputers"
+    compile name: "computronics"
 
 }
 

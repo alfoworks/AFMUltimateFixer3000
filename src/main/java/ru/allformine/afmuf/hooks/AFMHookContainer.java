@@ -6,6 +6,7 @@ import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.ReturnCondition;
 import li.cil.oc.api.network.ComponentConnector;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -20,6 +21,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import pcl.opensecurity.common.tileentity.TileEntityEntityDetector;
+import pl.asie.computronics.reference.Config;
+import pl.asie.computronics.util.RadarUtils;
 import ru.allformine.afmcp.vanish.VanishManager;
 import ru.allformine.afmuf.alert.AlertContext;
 import ru.allformine.afmuf.alert.AlertMod;
@@ -27,7 +30,9 @@ import ru.allformine.afmuf.net.discord.Webhook;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class AFMHookContainer {
     @Hook(returnCondition = ReturnCondition.ON_TRUE, returnNull = true)
@@ -87,6 +92,8 @@ public class AFMHookContainer {
         return value;
     }
 
+    // ================Vanish: OpenSecurity======================== //
+
     @Hook(returnCondition = ReturnCondition.ALWAYS)
     public static Map<Integer, HashMap<String, Object>> scan(TileEntityEntityDetector anus, boolean players, BlockPos offset) {
         Map<Integer, HashMap<String, Object>> output = new HashMap<>();
@@ -116,6 +123,36 @@ public class AFMHookContainer {
 
         return output;
     }
+
+    // ================Vanish: Computronics======================== //
+
+    @Hook(returnCondition = ReturnCondition.ALWAYS)
+    public static Set<Map<String, Object>> getEntities(RadarUtils anus, World world, double xCoord, double yCoord, double zCoord, AxisAlignedBB bounds, Class<? extends EntityLivingBase> eClass) {
+        Set<Map<String, Object>> entities = new HashSet<Map<String, Object>>();
+        for (EntityLivingBase entity : world.getEntitiesWithinAABB(eClass, bounds)) {
+            if (eClass == EntityPlayer.class && !VanishManager.tabList.tabList.contains(((EntityPlayer) entity).getDisplayNameString())) {
+                continue;
+            }
+
+            double dx = entity.posX - xCoord;
+            double dy = entity.posY - yCoord;
+            double dz = entity.posZ - zCoord;
+            if (Math.sqrt(dx * dx + dy * dy + dz * dz) < Config.RADAR_RANGE) {
+                Map<String, Object> entry = new HashMap<String, Object>();
+                entry.put("name", entity.getName());
+                if (!Config.RADAR_ONLY_DISTANCE) {
+                    entry.put("x", (int) dx);
+                    entry.put("y", (int) dy);
+                    entry.put("z", (int) dz);
+                }
+                entry.put("distance", Math.sqrt(dx * dx + dy * dy + dz * dz));
+                entities.add(entry);
+            }
+        }
+        return entities;
+    }
+
+    // ============================================================ //
 
     public static int getPlayerCount(MinecraftServer anus) {
         return VanishManager.getPlayerCountExcludingVanished();
