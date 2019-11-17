@@ -4,21 +4,30 @@ import com.mrcrayfish.furniture.network.message.MessageDoorMat;
 import com.mrcrayfish.furniture.tileentity.TileEntityDoorMat;
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.ReturnCondition;
+import li.cil.oc.api.network.ComponentConnector;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import pcl.opensecurity.common.tileentity.TileEntityEntityDetector;
 import ru.allformine.afmcp.vanish.VanishManager;
 import ru.allformine.afmuf.alert.AlertContext;
 import ru.allformine.afmuf.alert.AlertMod;
 import ru.allformine.afmuf.net.discord.Webhook;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AFMHookContainer {
     @Hook(returnCondition = ReturnCondition.ON_TRUE, returnNull = true)
@@ -53,6 +62,59 @@ public class AFMHookContainer {
     @Hook(returnCondition = ReturnCondition.ALWAYS, returnAnotherMethod = "getPlayerCount")
     public static boolean getCurrentPlayerCount(MinecraftServer anus) {
         return true;
+    }
+
+    public static HashMap<String, Object> info(Entity entity, BlockPos offset, BlockPos a, ComponentConnector node) {
+        HashMap<String, Object> value = new HashMap<String, Object>();
+
+        double rangeToEntity = entity.getDistance(a.getX(), a.getY(), a.getZ());
+        String name;
+        if (entity instanceof EntityPlayer)
+            name = ((EntityPlayer) entity).getDisplayNameString();
+        else
+            name = entity.getName();
+
+        BlockPos entityLocalPosition = entity.getPosition().subtract(offset);
+
+        value.put("name", name);
+        value.put("range", rangeToEntity);
+        value.put("height", entity.height);
+        value.put("x", entityLocalPosition.getX());
+        value.put("y", entityLocalPosition.getY());
+        value.put("z", entityLocalPosition.getZ());
+        node.sendToReachable("computer.signal", "entityDetect", name, rangeToEntity, entityLocalPosition.getX(), entityLocalPosition.getY(), entityLocalPosition.getZ());
+
+        return value;
+    }
+
+    @Hook(returnCondition = ReturnCondition.ALWAYS)
+    public static Map<Integer, HashMap<String, Object>> scan(TileEntityEntityDetector anus, boolean players, BlockPos offset) {
+        Map<Integer, HashMap<String, Object>> output = new HashMap<>();
+        int index = 1;
+
+        int range;
+
+        try {
+            Field field = anus.getClass().getDeclaredField("range");
+            field.setAccessible(true);
+
+            range = (int) field.get(anus);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return output;
+        }
+
+        for (Entity entity : anus.getWorld().getEntitiesWithinAABB(Entity.class, new AxisAlignedBB(anus.getPos(), anus.getPos()).grow(range))) {
+            if (players && entity instanceof EntityPlayer) {
+                if (VanishManager.tabList.tabList.contains(((EntityPlayer) entity).getDisplayNameString()))
+                    output.put(index++, info(entity, offset, anus.getPos(), anus.node));
+            } else if (!players && !(entity instanceof EntityPlayer)) {
+                output.put(index++, info(entity, offset, anus.getPos(), anus.node));
+            }
+        }
+
+        return output;
     }
 
     public static int getPlayerCount(MinecraftServer anus) {

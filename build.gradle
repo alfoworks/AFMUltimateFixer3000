@@ -82,6 +82,8 @@ dependencies {
 
     compile name: "furniture"
     compile name: "afmcp"
+    compile name: "opensecurity"
+    compile name: "opencomputers"
 
 }
 
