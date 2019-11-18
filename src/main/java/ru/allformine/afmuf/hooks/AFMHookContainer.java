@@ -5,6 +5,7 @@ import com.mrcrayfish.furniture.tileentity.TileEntityDoorMat;
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.ReturnCondition;
 import li.cil.oc.api.network.ComponentConnector;
+import li.cil.oc.server.machine.Machine;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,6 +30,7 @@ import ru.allformine.afmuf.alert.AlertMod;
 import ru.allformine.afmuf.net.discord.Webhook;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -150,6 +152,33 @@ public class AFMHookContainer {
             }
         }
         return entities;
+    }
+
+    // ================Vanish: OpenComputers======================= //
+
+    @Hook(returnCondition = ReturnCondition.ALWAYS)
+    public static void addUser(Machine anus, String name) throws Exception {
+        if (anus.li$cil$oc$server$machine$Machine$$_users().size() >= li.cil.oc.Settings.get().maxUsers()) {
+            throw new Exception("too many users");
+        } else if (anus.li$cil$oc$server$machine$Machine$$_users().contains(name)) {
+            throw new Exception("user exists");
+        } else if (name.length() > li.cil.oc.Settings.get().maxUsernameLength()) {
+            throw new Exception("username too long");
+        } else if (VanishManager.tabList.tabList.contains(name)) {
+            synchronized (anus.li$cil$oc$server$machine$Machine$$_users()) {
+                anus.li$cil$oc$server$machine$Machine$$_users().$plus$eq(name);
+
+                try {
+                    Method method = anus.getClass().getDeclaredMethod("usersChanged_$eq", boolean.class);
+                    method.setAccessible(true);
+                    method.invoke(anus, true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            throw new Exception("player must be online (beu!)");
+        }
     }
 
     // ============================================================ //

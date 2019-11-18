@@ -21,18 +21,6 @@ jar {
     }
 }
 
-task signJar(type: SignJar, dependsOn: reobfJar) {
-    inputFile = jar.archivePath
-    outputFile = jar.archivePath
-
-    alias = "anal"
-    storePass = "123123"
-    keyPass = "123123"
-    keyStore = "./keystore.jks"
-}
-
-build.dependsOn signJar
-
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
