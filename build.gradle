@@ -73,6 +73,7 @@ dependencies {
     compile name: "opensecurity"
     compile name: "opencomputers"
     compile name: "computronics"
+    compile name: "ic2"
 
 }
 

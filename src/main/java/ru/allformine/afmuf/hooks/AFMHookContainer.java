@@ -4,6 +4,7 @@ import com.mrcrayfish.furniture.network.message.MessageDoorMat;
 import com.mrcrayfish.furniture.tileentity.TileEntityDoorMat;
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.ReturnCondition;
+import ic2.core.ExplosionIC2;
 import li.cil.oc.api.network.ComponentConnector;
 import li.cil.oc.server.machine.Machine;
 import net.minecraft.entity.Entity;
@@ -20,6 +21,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import pcl.opensecurity.common.tileentity.TileEntityEntityDetector;
 import pl.asie.computronics.reference.Config;
@@ -179,6 +181,30 @@ public class AFMHookContainer {
         } else {
             throw new Exception("player must be online (beu!)");
         }
+    }
+
+    // ============================================================ //
+
+    @Hook(returnCondition = ReturnCondition.ON_TRUE)
+    public boolean doExplosion(ExplosionIC2 anus) {
+        World world;
+
+        try {
+            Field field = anus.getClass().getDeclaredField("worldObj");
+            field.setAccessible(true);
+
+            world = (World) field.get(World.class);
+        } catch (Exception e) {
+            return false;
+        }
+
+
+        final ExplosionEvent event = new ExplosionEvent(world, anus);
+        boolean test = MinecraftForge.EVENT_BUS.post(event);
+
+        System.out.println(test);
+
+        return test;
     }
 
     // ============================================================ //
