@@ -186,7 +186,7 @@ public class AFMHookContainer {
     // ============================================================ //
 
     @Hook(returnCondition = ReturnCondition.ON_TRUE)
-    public boolean doExplosion(ExplosionIC2 anus) {
+    public static boolean doExplosion(ExplosionIC2 anus) {
         World world;
 
         try {
