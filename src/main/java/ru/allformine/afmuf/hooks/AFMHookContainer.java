@@ -190,21 +190,19 @@ public class AFMHookContainer {
         World world;
 
         try {
-            Field field = anus.getClass().getDeclaredField("worldObj");
-            field.setAccessible(true);
-
-            world = (World) field.get(World.class);
+            Field fieldWorld = anus.getClass().getDeclaredField("worldObj");
+            fieldWorld.setAccessible(true);
+            world = (World) fieldWorld.get(anus);
         } catch (Exception e) {
+            e.printStackTrace();
+
             return false;
         }
 
 
-        final ExplosionEvent event = new ExplosionEvent(world, anus);
-        boolean test = MinecraftForge.EVENT_BUS.post(event);
+        final ExplosionEvent event = new ExplosionEvent.Start(world, anus);
 
-        System.out.println(test);
-
-        return test;
+        return MinecraftForge.EVENT_BUS.post(event);
     }
 
     // ============================================================ //

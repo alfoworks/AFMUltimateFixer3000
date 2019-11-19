@@ -1,5 +1,6 @@
 package ru.allformine.afmuf;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -23,5 +24,7 @@ public class AFMUltimateFixer {
         config.load();
 
         References.server_id = config.getString("Discord", "server_id", References.server_id, "Server ID");
+
+        MinecraftForge.EVENT_BUS.register(this);
     }
 }
