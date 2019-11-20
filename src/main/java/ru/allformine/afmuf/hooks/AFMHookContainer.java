@@ -7,6 +7,7 @@ import gloomyfolken.hooklib.asm.ReturnCondition;
 import ic2.core.ExplosionIC2;
 import li.cil.oc.api.network.ComponentConnector;
 import li.cil.oc.server.machine.Machine;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -21,6 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import pcl.opensecurity.common.tileentity.TileEntityEntityDetector;
@@ -199,10 +201,27 @@ public class AFMHookContainer {
             return false;
         }
 
+        // Explosion event
 
-        final ExplosionEvent event = new ExplosionEvent.Start(world, anus);
+        ExplosionEvent event = new ExplosionEvent.Start(world, anus);
 
-        return MinecraftForge.EVENT_BUS.post(event);
+        if (MinecraftForge.EVENT_BUS.post(event)) {
+            return true;
+        }
+
+        // Не прошло, имеет смысл прочекать блоки взрыва отдельно
+
+        for (BlockPos block : anus.getAffectedBlockPositions()) {
+            IBlockState state = world.getBlockState(block);
+
+            BlockEvent.BreakEvent blockEvent = new BlockEvent.BreakEvent(world, block, state, (EntityPlayer) anus.getExplosivePlacedBy());
+
+            if (MinecraftForge.EVENT_BUS.post(blockEvent)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // ============================================================ //
