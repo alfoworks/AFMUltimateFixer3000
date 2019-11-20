@@ -69,7 +69,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     compile name: "furniture"
-    compile name: "afmcp"
+    compile name: "afmvanish"
     compile name: "opensecurity"
     compile name: "opencomputers"
     compile name: "computronics"

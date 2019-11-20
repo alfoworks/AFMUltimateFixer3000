@@ -26,10 +26,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import pcl.opensecurity.common.tileentity.TileEntityEntityDetector;
 import pl.asie.computronics.reference.Config;
 import pl.asie.computronics.util.RadarUtils;
-import ru.allformine.afmcp.vanish.VanishManager;
 import ru.allformine.afmuf.alert.AlertContext;
 import ru.allformine.afmuf.alert.AlertMod;
 import ru.allformine.afmuf.net.discord.Webhook;
+import ru.allformine.afmvanish.vanish.VanishManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
