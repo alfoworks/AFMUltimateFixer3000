@@ -249,7 +249,7 @@ public class AFMHookContainer {
         int laserSetting = nbtData.getInteger("laserSetting");
 
         if (laserSetting == 5 || laserSetting == 6) {
-            player.sendMessage(new TextComponentString("Этот режим был отключен. С любовью, AllForMine."));
+            player.sendMessage(new TextComponentString("Этот режим был отключен. С любовью, ALFO:MINE."));
 
             return true;
         }

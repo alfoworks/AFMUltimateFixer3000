@@ -1,5 +1,6 @@
 package ru.allformine.afmuf.ic2;
 // Беубасс
+
 import ic2.api.tile.ExplosionWhitelist;
 import ic2.core.ExplosionIC2;
 import ic2.core.IC2;
@@ -7,7 +8,6 @@ import ic2.core.IC2DamageSource;
 import ic2.core.IC2Potion;
 import ic2.core.item.armor.ItemArmorHazmat;
 import ic2.core.util.ItemComparableItemStack;
-import ic2.core.util.StackUtil;
 import ic2.core.util.Util;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -18,7 +18,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
-import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -61,22 +60,10 @@ public class AFMExplosionIC2 extends Explosion {
     private final long[][] destroyedBlockPositions;
     private ChunkCache chunkCache;
 
-    public AFMExplosionIC2(final World world, final Entity entity, final double x, final double y, final double z, final float power, final float drop) {
-        this(world, entity, x, y, z, power, drop, Type.Normal);
-    }
-
-    public AFMExplosionIC2(final World world, final Entity entity, final double x, final double y, final double z, final float power, final float drop, final Type type) {
-        this(world, entity, x, y, z, power, drop, type, null, 0);
-    }
-
-    public AFMExplosionIC2(final World world, final Entity entity, final BlockPos pos, final float power, final float drop, final Type type) {
-        this(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, power, drop, type);
-    }
-
     public AFMExplosionIC2(final World world, final Entity entity, final double x, final double y, final double z, final float power1, final float drop, final Type type1, final EntityLivingBase igniter1, final int radiationRange1) {
         super(world, entity, x, y, z, power1, false, false);
         this.rng = new Random();
-        this.entitiesInRange = new ArrayList<EntityDamage>();
+        this.entitiesInRange = new ArrayList<>();
         this.worldObj = world;
         this.exploder = entity;
         this.explosionX = x;
@@ -99,10 +86,6 @@ public class AFMExplosionIC2 extends Explosion {
             this.damageSource = DamageSource.causeExplosionDamage(this);
         }
         this.destroyedBlockPositions = new long[this.mapHeight][];
-    }
-
-    public AFMExplosionIC2(final World world, final Entity entity, final BlockPos pos, final int i, final float f, final Type heat) {
-        this(world, entity, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, (float) i, f, heat);
     }
 
     private static double getEntityHealth(final Entity entity) {
@@ -170,6 +153,7 @@ public class AFMExplosionIC2 extends Explosion {
         final BlockPos end = pos.add(range, range, range);
         this.chunkCache = new ChunkCache(this.worldObj, start, end, 0);
         final List<Entity> entities = this.worldObj.getEntitiesWithinAABBExcludingEntity(null, new AxisAlignedBB(start, end));
+
         for (final Entity entity : entities) {
             if (entity instanceof EntityLivingBase || entity instanceof EntityItem) {
                 final int distance = (int) (Util.square(entity.posX - this.explosionX) + Util.square(entity.posY - this.explosionY) + Util.square(entity.posZ - this.explosionZ));
@@ -177,12 +161,16 @@ public class AFMExplosionIC2 extends Explosion {
                 this.entitiesInRange.add(new EntityDamage(entity, distance, health));
             }
         }
+
         final boolean entitiesAreInRange = !this.entitiesInRange.isEmpty();
+
         if (entitiesAreInRange) {
             this.entitiesInRange.sort(Comparator.comparingInt(a -> a.distance));
         }
+
         final int steps = (int) Math.ceil(3.141592653589793 / Math.atan(1.0 / this.maxDistance));
         final BlockPos.MutableBlockPos tmpPos = new BlockPos.MutableBlockPos();
+
         for (int phi_n = 0; phi_n < 2 * steps; ++phi_n) {
             for (int theta_n = 0; theta_n < steps; ++theta_n) {
                 final double phi = 6.283185307179586 / steps * phi_n;
@@ -190,46 +178,53 @@ public class AFMExplosionIC2 extends Explosion {
                 this.shootRay(this.explosionX, this.explosionY, this.explosionZ, phi, theta, this.power, entitiesAreInRange && phi_n % 8 == 0 && theta_n % 8 == 0, tmpPos);
             }
         }
+
         for (final EntityDamage entry : this.entitiesInRange) {
             final Entity entity2 = entry.entity;
             entity2.attackEntityFrom(this.damageSource, (float) entry.damage);
+
             if (entity2 instanceof EntityPlayer) {
                 final EntityPlayer player = (EntityPlayer) entity2;
                 if (this.isNuclear() && this.igniter != null && player == this.igniter && player.getHealth() <= 0.0f) {
                     IC2.achievements.issueAchievement(player, "dieFromOwnNuke");
                 }
             }
+
             final double motionSq = Util.square(entry.motionX) + Util.square(entity2.motionY) + Util.square(entity2.motionZ);
             final double reduction = (motionSq > 3600.0) ? Math.sqrt(3600.0 / motionSq) : 1.0;
-            final Entity entity4 = entity2;
-            entity4.motionX += entry.motionX * reduction;
-            final Entity entity5 = entity2;
-            entity5.motionY += entry.motionY * reduction;
-            final Entity entity6 = entity2;
-            entity6.motionZ += entry.motionZ * reduction;
+            entity2.motionX += entry.motionX * reduction;
+            entity2.motionY += entry.motionY * reduction;
+            entity2.motionZ += entry.motionZ * reduction;
         }
+
         if (this.isNuclear() && this.radiationRange >= 1) {
-            final List<EntityLiving> entitiesInRange = (List<EntityLiving>) this.worldObj.getEntitiesWithinAABB((Class) EntityLiving.class, new AxisAlignedBB(this.explosionX - this.radiationRange, this.explosionY - this.radiationRange, this.explosionZ - this.radiationRange, this.explosionX + this.radiationRange, this.explosionY + this.radiationRange, this.explosionZ + this.radiationRange));
+            final List<EntityLiving> entitiesInRange = this.worldObj.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(this.explosionX - this.radiationRange, this.explosionY - this.radiationRange, this.explosionZ - this.radiationRange, this.explosionX + this.radiationRange, this.explosionY + this.radiationRange, this.explosionZ + this.radiationRange));
             for (final EntityLiving entity3 : entitiesInRange) {
                 if (ItemArmorHazmat.hasCompleteHazmat(entity3)) {
                     continue;
                 }
+
                 final double distance2 = entity3.getDistance(this.explosionX, this.explosionY, this.explosionZ);
                 final int hungerLength = (int) (120.0 * (this.radiationRange - distance2));
                 final int poisonLength = (int) (80.0 * (this.radiationRange / 3 - distance2));
                 if (hungerLength >= 0) {
                     entity3.addPotionEffect(new PotionEffect(MobEffects.HUNGER, hungerLength, 0));
                 }
+
                 if (poisonLength < 0) {
                     continue;
                 }
+
                 IC2Potion.radiation.applyTo(entity3, poisonLength, 0);
             }
         }
+
         IC2.network.get(true).initiateExplosionEffect(this.worldObj, this.getPosition(), getOriginalExplosionType());
         final Random rng = this.worldObj.rand;
-        final boolean doDrops = this.worldObj.getGameRules().getBoolean("doTileDrops");
         final Map<XZposition, Map<ItemComparableItemStack, DropData>> blocksToDrop = new HashMap<XZposition, Map<ItemComparableItemStack, DropData>>();
+
+        List<BlockPos> blocks = new ArrayList<>();
+
         for (int y = 0; y < this.destroyedBlockPositions.length; ++y) {
             final long[] bitSet = this.destroyedBlockPositions[y];
             if (bitSet != null) {
@@ -240,54 +235,34 @@ public class AFMExplosionIC2 extends Explosion {
                     int x = realIndex - z * this.areaSize;
                     x += this.areaX;
                     z += this.areaZ;
-                    final IBlockState state = this.chunkCache.getBlockState((new BlockPos(x, y, z)));
 
-                    EntityPlayer player = this.igniter != null ? ((EntityPlayer) this.igniter) : AFMIC2FakePlayer.getFakePlayer((WorldServer) this.worldObj);
+                    BlockPos blockPos = new BlockPos(x, y, z);
+                    final IBlockState state = this.worldObj.getBlockState(blockPos);
 
-                    BlockEvent.BreakEvent blockEvent = new BlockEvent.BreakEvent(this.worldObj, new BlockPos(x, y, z), state, player);
-
-                    if (MinecraftForge.EVENT_BUS.post(blockEvent)) {
-                        continue;
+                    EntityPlayer player = AFMIC2FakePlayer.getFakePlayer((WorldServer) this.worldObj);
+                    BlockEvent.BreakEvent blockEvent = new BlockEvent.BreakEvent(this.worldObj, blockPos, state, player);
+                    boolean cancelled = MinecraftForge.EVENT_BUS.post(blockEvent);
+                    if (!cancelled) {
+                        blocks.add(blockPos);
                     }
-
-                    tmpPos.setPos(x, y, z);
-                    final Block block = state.getBlock();
-
-                    if (doDrops && block.canDropFromExplosion(this) && getAtIndex(index, bitSet, 2) == 1) {
-                        for (final ItemStack stack : StackUtil.getDrops(this.worldObj, tmpPos, state, block, 0)) {
-                            if (rng.nextFloat() > this.explosionDropRate) {
-                                continue;
-                            }
-                            final XZposition xZposition = new XZposition(x / 2, z / 2);
-                            Map<ItemComparableItemStack, DropData> map = blocksToDrop.get(xZposition);
-                            if (map == null) {
-                                map = new HashMap<ItemComparableItemStack, DropData>();
-                                blocksToDrop.put(xZposition, map);
-                            }
-                            final ItemComparableItemStack isw = new ItemComparableItemStack(stack, false);
-                            DropData data = map.get(isw);
-                            if (data == null) {
-                                data = new DropData(StackUtil.getSize(stack), y);
-                                map.put(isw.copy(), data);
-                            } else {
-                                data.add(StackUtil.getSize(stack), y);
-                            }
-                        }
-                    }
-                    block.onBlockExploded(this.worldObj, tmpPos, this);
                 }
             }
         }
-        for (final Map.Entry<XZposition, Map<ItemComparableItemStack, DropData>> entry2 : blocksToDrop.entrySet()) {
-            final XZposition xZposition2 = entry2.getKey();
-            for (final Map.Entry<ItemComparableItemStack, DropData> entry3 : entry2.getValue().entrySet()) {
-                final ItemComparableItemStack isw2 = entry3.getKey();
-                int stackSize;
-                for (int count = entry3.getValue().n; count > 0; count -= stackSize) {
-                    stackSize = Math.min(count, 64);
-                    final EntityItem entityitem = new EntityItem(this.worldObj, (double) ((xZposition2.x + this.worldObj.rand.nextFloat()) * 2.0f), entry3.getValue().maxY + 0.5, (double) ((xZposition2.z + this.worldObj.rand.nextFloat()) * 2.0f), isw2.toStack(stackSize));
-                    entityitem.setDefaultPickupDelay();
-                    this.worldObj.spawnEntity(entityitem);
+
+        for (BlockPos blockPos : blocks) {
+            Block block = this.chunkCache.getBlockState(blockPos).getBlock();
+            block.onBlockExploded(this.worldObj, blockPos, this);
+            for (final Map.Entry<XZposition, Map<ItemComparableItemStack, DropData>> entry2 : blocksToDrop.entrySet()) {
+                final XZposition xZposition2 = entry2.getKey();
+                for (final Map.Entry<ItemComparableItemStack, DropData> entry3 : entry2.getValue().entrySet()) {
+                    final ItemComparableItemStack isw2 = entry3.getKey();
+                    int stackSize;
+                    for (int count = entry3.getValue().n; count > 0; count -= stackSize) {
+                        stackSize = Math.min(count, 64);
+                        final EntityItem entityitem = new EntityItem(this.worldObj, (double) ((xZposition2.x + this.worldObj.rand.nextFloat()) * 2.0f), entry3.getValue().maxY + 0.5, (double) ((xZposition2.z + this.worldObj.rand.nextFloat()) * 2.0f), isw2.toStack(stackSize));
+                        entityitem.setDefaultPickupDelay();
+                        this.worldObj.spawnEntity(entityitem);
+                    }
                 }
             }
         }
