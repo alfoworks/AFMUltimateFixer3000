@@ -21,22 +21,14 @@ jar {
     }
 }
 
-task signJar(type: SignJar, dependsOn: reobfJar) {
-    inputFile = jar.archivePath
-    outputFile = jar.archivePath
-
-    alias = "anal"
-    storePass = "123123"
-    keyPass = "123123"
-    keyStore = "./keystore.jks"
-}
-
-build.dependsOn signJar
-
 sourceCompatibility = targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 compileJava {
     sourceCompatibility = targetCompatibility = '1.8'
 }
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+javadoc.options.encoding = 'UTF-8'
 
 repositories {
     flatDir {
@@ -83,6 +75,11 @@ dependencies {
     compile name: "furniture"
     compile name: "Computronics-1.12.2-1.6.6-deobf"
     compile name: "OpenComputers-MC1.12.2-1.7.5.192"
+    compile name: "afmvanish"
+    compile name: "opensecurity"
+    compile name: "opencomputers"
+    compile name: "computronics"
+    compile name: "ic2"
 
 }
 
