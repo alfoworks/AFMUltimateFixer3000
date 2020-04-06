@@ -81,6 +81,8 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 
     compile name: "furniture"
+    compile name: "Computronics-1.12.2-1.6.6-deobf"
+    compile name: "OpenComputers-MC1.12.2-1.7.5.192"
 
 }
 

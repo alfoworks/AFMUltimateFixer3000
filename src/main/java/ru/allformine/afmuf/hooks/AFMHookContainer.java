@@ -4,7 +4,6 @@ import com.mrcrayfish.furniture.network.message.MessageDoorMat;
 import com.mrcrayfish.furniture.tileentity.TileEntityDoorMat;
 import gloomyfolken.hooklib.asm.Hook;
 import gloomyfolken.hooklib.asm.ReturnCondition;
-import ibxm.Player;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +12,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import ru.allformine.afmuf.alert.AlertContext;
 import ru.allformine.afmuf.alert.AlertMod;
 import ru.allformine.afmuf.net.discord.Webhook;
+import pl.asie.computronics.oc.driver.RobotUpgradeChatBox;
+import pl.asie.computronics.tile.TileChatBox;
+import pl.asie.computronics.oc.driver.DriverCardFX;
+import li.cil.oc.api.machine.Arguments;
+import li.cil.oc.api.machine.Context;
 
 public class AFMHookContainer {
     @Hook(returnCondition = ReturnCondition.ON_TRUE, returnNull = true)
@@ -41,4 +45,27 @@ public class AFMHookContainer {
 
         return false;
     }
+
+    @Hook(returnCondition = ReturnCondition.ON_TRUE, returnNull = true)
+    public static boolean spawn(DriverCardFX anus, Context context, Arguments args){
+        double velX = args.checkDouble(4);
+        double velY = args.checkDouble(5);
+        double velZ = args.checkDouble(6);
+        return velX < 65536 && velX > -65536 && velY < 65536 && velY > -65536 && velZ < 65536 && velZ > -65536;
+    }
+
+    public static boolean say(Arguments args){
+        return args.checkString(0).length() < 128;
+    }
+
+    @Hook(returnCondition = ReturnCondition.ON_TRUE, returnNull = true)
+    public static boolean say(TileChatBox anus, Arguments args){
+        return say(args);
+    }
+
+    @Hook(returnCondition = ReturnCondition.ON_TRUE, returnNull = true)
+    public static boolean say(RobotUpgradeChatBox anus, Arguments args){
+        return say(args);
+    }
+
 }
