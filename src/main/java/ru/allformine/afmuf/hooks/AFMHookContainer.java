@@ -1,6 +1,5 @@
 package ru.allformine.afmuf.hooks;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
 import com.mrcrayfish.furniture.network.message.MessageDoorMat;
 import com.mrcrayfish.furniture.tileentity.TileEntityDoorMat;
 import gloomyfolken.hooklib.asm.Hook;
@@ -19,10 +18,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.EnumConnectionState;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.handshake.client.C00Handshake;
-import net.minecraft.network.login.server.SPacketDisconnect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ActionResult;
@@ -36,11 +31,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.FMLLog;
-import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.fml.relauncher.Side;
 import pcl.opensecurity.common.tileentity.TileEntityEntityDetector;
 import pl.asie.computronics.oc.driver.DriverCardFX;
 import pl.asie.computronics.oc.driver.RobotUpgradeChatBox;
@@ -56,7 +47,10 @@ import ru.allformine.afmvanish.vanish.VanishManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class AFMHookContainer {
     @Hook(returnCondition = ReturnCondition.ON_TRUE, returnNull = true)
@@ -292,31 +286,5 @@ public class AFMHookContainer {
     @Hook(returnCondition = ReturnCondition.ON_TRUE, returnNull = true)
     public static boolean say(RobotUpgradeChatBox anus, Arguments args) {
         return say(args);
-    }
-
-    // Forge: server is still starting message //
-
-    @Hook(returnCondition = ReturnCondition.ALWAYS)
-    public static boolean handleServerHandshake(FMLCommonHandler anus, C00Handshake packet, NetworkManager manager) {
-        if (!anus.shouldAllowPlayerLogins()) {
-            TextComponentString text = new TextComponentString(ChatFormatting.LIGHT_PURPLE + "Сервер всё ещё запускается! Пожалуйста, попробуйте позже.");
-            FMLLog.log.info("Disconnecting Player: {}", text.getUnformattedText());
-            manager.sendPacket(new SPacketDisconnect(text));
-            manager.closeChannel(text);
-            return false;
-        }
-
-        if (packet.getRequestedState() == EnumConnectionState.LOGIN && (!NetworkRegistry.INSTANCE.isVanillaAccepted(Side.CLIENT) && !packet.hasFMLMarker())) {
-            manager.setConnectionState(EnumConnectionState.LOGIN);
-            TextComponentString text = new TextComponentString("This server has mods that require FML/Forge to be installed on the client. Contact your server admin for more details.");
-            Collection<String> modNames = NetworkRegistry.INSTANCE.getRequiredMods(Side.CLIENT);
-            FMLLog.log.info("Disconnecting Player: This server has mods that require FML/Forge to be installed on the client: {}", modNames);
-            manager.sendPacket(new SPacketDisconnect(text));
-            manager.closeChannel(text);
-            return false;
-        }
-
-        manager.channel().attr(NetworkRegistry.FML_MARKER).set(packet.hasFMLMarker());
-        return true;
     }
 }
