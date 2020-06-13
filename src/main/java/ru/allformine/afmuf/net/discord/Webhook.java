@@ -13,7 +13,7 @@ public class Webhook {
         object.addProperty("group", "secalert");
         object.add("arguments", arrayToJson(extra));
         final String json = object.toString();
-        Requests.sendPostJSON(json, "https://allformine.ru/webhook_api/");
+        Requests.sendPostJSON(json, "https://hooks.alfo.ws/servers");
     }
 
     private static JsonArray arrayToJson(String[] array) {
