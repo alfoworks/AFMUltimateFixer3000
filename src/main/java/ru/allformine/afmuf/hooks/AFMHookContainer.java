@@ -82,8 +82,14 @@ public class AFMHookContainer {
         return false;
     }
 
-    @Hook(returnCondition = ReturnCondition.ALWAYS, returnAnotherMethod = "getPlayerCount")
+    @Hook(returnCondition = ReturnCondition.ON_TRUE, returnAnotherMethod = "getPlayerCount")
     public static boolean getCurrentPlayerCount(MinecraftServer anus) {
+        try {
+            Class.forName("ru.allformine.afmvanish.vanish.VanishManager");
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+
         return true;
     }
 

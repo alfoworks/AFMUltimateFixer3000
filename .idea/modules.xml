@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/AFMUltimateFixer3000.iml" filepath="$PROJECT_DIR$/.idea/AFMUltimateFixer3000.iml" group="AFMUltimateFixer3000" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AFMUltimateFixer3000_api.iml" filepath="$PROJECT_DIR$/.idea/modules/AFMUltimateFixer3000_api.iml" group="AFMUltimateFixer3000" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AFMUltimateFixer3000_main.iml" filepath="$PROJECT_DIR$/.idea/modules/AFMUltimateFixer3000_main.iml" group="AFMUltimateFixer3000" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/AFMUltimateFixer3000_test.iml" filepath="$PROJECT_DIR$/.idea/modules/AFMUltimateFixer3000_test.iml" group="AFMUltimateFixer3000" />
