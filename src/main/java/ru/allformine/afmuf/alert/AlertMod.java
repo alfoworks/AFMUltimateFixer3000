@@ -3,7 +3,8 @@ package ru.allformine.afmuf.alert;
 public enum AlertMod {
     UNKNOWN("Unknown mod"),
 
-    FURNITURE("Crayfish Furniture");
+    FURNITURE("Crayfish Furniture"),
+    AFMSM("AFMSpaceUnionMod");
 
     private String url;
 
